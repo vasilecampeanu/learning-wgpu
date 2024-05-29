@@ -1,11 +1,5 @@
-[package]
-name = "nbodyproblem"
-version = "0.0.1"
-authors = ["Vasile Campeanu <contact@vasilecampeanu.com>"]
-edition = "2024"
-
 [workspace]
 members = [
-    "engine",
-    "sandbox",
+    "apps/sandbox",
 ]
+resolver = "2"
