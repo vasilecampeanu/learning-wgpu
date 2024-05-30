@@ -57,7 +57,7 @@ impl<'a> State<'a> {
         // one will result all the colors coming out darker. If you want to support non
         // Srgb surfaces, you'll need to account for that when drawing to the frame.
         
-        let surface_format = surface_caps
+        let surface_format: wgpu::TextureFormat = surface_caps
             .formats
             .iter()
             .copied()
@@ -77,10 +77,10 @@ impl<'a> State<'a> {
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
-            source: wgpu::ShaderSource::Wgsl(include_str!("shader.wgsl").into()),
+            source: wgpu::ShaderSource::Wgsl(include_str!("shaders/shader.wgsl").into())
         });
 
-        let render_pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+        let render_pipeline_layout: wgpu::PipelineLayout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some("Render Pipeline Layout"),
             bind_group_layouts: &[],
             push_constant_ranges: &[],
@@ -111,8 +111,7 @@ impl<'a> State<'a> {
                 strip_index_format: None,
                 front_face: wgpu::FrontFace::Ccw,
                 cull_mode: Some(wgpu::Face::Back),
-                // Setting this to anything other than Fill requires Features::POLYGON_MODE_LINE
-                // or Features::POLYGON_MODE_POINT
+                // !!! Setting this to anything other than Fill requires Features::POLYGON_MODE_LINE or Features::POLYGON_MODE_POINT
                 polygon_mode: wgpu::PolygonMode::Fill,
                 // Requires Features::DEPTH_CLIP_CONTROL
                 unclipped_depth: false,
@@ -143,6 +142,10 @@ impl<'a> State<'a> {
 
     pub fn window(&self) -> &Window {
         &self.window
+    }
+
+    pub fn size(&self) -> winit::dpi::PhysicalSize<u32> {
+        self.size
     }
 
     pub fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {

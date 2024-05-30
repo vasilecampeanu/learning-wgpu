@@ -17,7 +17,7 @@ pub async fn run() {
     cfg_if::cfg_if! {
         if #[cfg(target_arch = "wasm32")] {
             std::panic::set_hook(Box::new(console_error_panic_hook::hook));
-            console_log::init_with_level(log::Level::Warn).expect("Could't initialize logger");
+            console_log::init_with_level(log::Level::Warn).expect("Could't initialize logger...");
         } else {
             env_logger::init();
         }
@@ -36,6 +36,7 @@ pub async fn run() {
         let _ = window.request_inner_size(PhysicalSize::new(1080, 760));
 
         use winit::platform::web::WindowExtWebSys;
+
         web_sys::window()
             .and_then(|win| win.document())
             .and_then(|doc| {
@@ -55,7 +56,9 @@ pub async fn run() {
             Event::WindowEvent {
                 ref event,
                 window_id,
-            } if window_id == state.window().id() => {
+            } 
+            
+            if window_id == state.window().id() => {
                 if !state.input(event) {
                     match event {
                         WindowEvent::CloseRequested | WindowEvent::KeyboardInput {
@@ -89,7 +92,7 @@ pub async fn run() {
                                 // Reconfigure the surface if it's lost or outdated
                                 Err(
                                     wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated,
-                                ) => state.resize(state.size),
+                                ) => state.resize(state.size()),
 
                                 // The system is out of memory, we should probably quit
                                 Err(wgpu::SurfaceError::OutOfMemory) => {
@@ -109,6 +112,5 @@ pub async fn run() {
             }
             _ => {}
         }
-    })
-    .unwrap();
+    }).unwrap();
 }
