@@ -1,3 +1,6 @@
+// Include files in module tree
+mod vertex;
+mod pipeline;
 mod state;
 
 use crate::state::State;
