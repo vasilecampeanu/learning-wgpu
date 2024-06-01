@@ -12,9 +12,9 @@ fn vs_main(@builtin(vertex_index) vertex_index: u32) -> VertexOutput {
     );
 
     var colors = array<vec3<f32>, 3>(
-        vec3<f32>(1.0, 0.0, 0.0),  // Red
-        vec3<f32>(0.0, 1.0, 0.0),  // Green
-        vec3<f32>(0.0, 0.0, 1.0)   // Blue
+        vec3<f32>(1.0, 0.0, 0.0), // Red
+        vec3<f32>(0.0, 1.0, 0.0), // Green
+        vec3<f32>(0.0, 0.0, 1.0)  // Blue
     );
 
     var output: VertexOutput;

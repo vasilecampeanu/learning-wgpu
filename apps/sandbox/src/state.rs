@@ -41,14 +41,15 @@ impl<'a> State<'a> {
             &wgpu::DeviceDescriptor {
                 label: None,
                 required_features: wgpu::Features::empty(),
-                // WebGL doesn't support all of wgpu's features, so if we're building for the web we'll have to disable some.
+                // WebGL doesn't support all of wgpu's features, 
+                // so if we're building for the web we'll have to disable some.
                 required_limits: if cfg!(target_arch = "wasm32") {
                     wgpu::Limits::downlevel_webgl2_defaults()
                 } else {
                     wgpu::Limits::default()
                 },
             },
-            None, // Trace path
+            None,
         ).await.unwrap();
 
         let surface_caps = surface.get_capabilities(&adapter);
@@ -57,7 +58,7 @@ impl<'a> State<'a> {
         // one will result all the colors coming out darker. If you want to support non
         // Srgb surfaces, you'll need to account for that when drawing to the frame.
         
-        let surface_format: wgpu::TextureFormat = surface_caps
+        let surface_format = surface_caps
             .formats
             .iter()
             .copied()
@@ -80,7 +81,7 @@ impl<'a> State<'a> {
             source: wgpu::ShaderSource::Wgsl(include_str!("shaders/shader.wgsl").into())
         });
 
-        let render_pipeline_layout: wgpu::PipelineLayout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+        let render_pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some("Render Pipeline Layout"),
             bind_group_layouts: &[],
             push_constant_ranges: &[],
@@ -111,11 +112,8 @@ impl<'a> State<'a> {
                 strip_index_format: None,
                 front_face: wgpu::FrontFace::Ccw,
                 cull_mode: Some(wgpu::Face::Back),
-                // !!! Setting this to anything other than Fill requires Features::POLYGON_MODE_LINE or Features::POLYGON_MODE_POINT
                 polygon_mode: wgpu::PolygonMode::Fill,
-                // Requires Features::DEPTH_CLIP_CONTROL
                 unclipped_depth: false,
-                // Requires Features::CONSERVATIVE_RASTERIZATION
                 conservative: false,
             },
             depth_stencil: None,
@@ -157,27 +155,22 @@ impl<'a> State<'a> {
         }
     }
 
-    #[allow(unused_variables)]
-    pub fn input(&mut self, event: &WindowEvent) -> bool {
+    pub fn input(&mut self, _event: &WindowEvent) -> bool {
         false
     }
 
     pub fn update(&mut self) {}
 
     pub fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
-        let output: wgpu::SurfaceTexture = self.surface.get_current_texture()?;
-        let view: wgpu::TextureView = output
-            .texture
-            .create_view(&wgpu::TextureViewDescriptor::default());
+        let output = self.surface.get_current_texture()?;
+        let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
 
-        let mut encoder = self
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("Render Encoder"),
-            });
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("Render Encoder"),
+        });
 
         {
-            let mut render_pass: wgpu::RenderPass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: &view,

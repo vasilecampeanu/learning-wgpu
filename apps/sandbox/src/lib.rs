@@ -17,7 +17,7 @@ pub async fn run() {
     cfg_if::cfg_if! {
         if #[cfg(target_arch = "wasm32")] {
             std::panic::set_hook(Box::new(console_error_panic_hook::hook));
-            console_log::init_with_level(log::Level::Warn).expect("Could't initialize logger...");
+            console_log::init_with_level(log::Level::Warn).expect("Couldn't initialize logger...");
         } else {
             env_logger::init();
         }
@@ -53,12 +53,7 @@ pub async fn run() {
 
     event_loop.run(move |event, control_flow| {
         match event {
-            Event::WindowEvent {
-                ref event,
-                window_id,
-            } 
-            
-            if window_id == state.window().id() => {
+            Event::WindowEvent {ref event, window_id } if window_id == state.window().id() => {
                 if !state.input(event) {
                     match event {
                         WindowEvent::CloseRequested | WindowEvent::KeyboardInput {
@@ -90,9 +85,7 @@ pub async fn run() {
                                 Ok(_) => {}
 
                                 // Reconfigure the surface if it's lost or outdated
-                                Err(
-                                    wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated,
-                                ) => state.resize(state.size()),
+                                Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => state.resize(state.size()),
 
                                 // The system is out of memory, we should probably quit
                                 Err(wgpu::SurfaceError::OutOfMemory) => {
@@ -101,9 +94,7 @@ pub async fn run() {
                                 }
 
                                 // This happens when a frame takes too long to present
-                                Err(wgpu::SurfaceError::Timeout) => {
-                                    log::warn!("Surface timeout")
-                                }
+                                Err(wgpu::SurfaceError::Timeout) => log::warn!("Surface timeout"),
                             }
                         }
                         _ => {}
