@@ -11,21 +11,23 @@ use crate::{
 };
 
 pub struct State<'a> {
-    surface: wgpu::Surface<'a>,
     device: wgpu::Device,
-    queue: wgpu::Queue,
-    config: wgpu::SurfaceConfiguration,
+    window: &'a Window,
     size: winit::dpi::PhysicalSize<u32>,
     render_pipeline: wgpu::RenderPipeline,
+    queue: wgpu::Queue,
+    surface: wgpu::Surface<'a>,
+    config: wgpu::SurfaceConfiguration,
     vertex_buffer: wgpu::Buffer,
-    num_vertices: u32,
-    window: &'a Window,
+    index_buffer: wgpu::Buffer, 
+    num_indices: u32,
 }
 
 impl<'a> State<'a> {
     pub async fn new(window: &'a Window) -> State<'a> {
         let size = window.inner_size();
-        let num_vertices = vertex::VERTICES.len() as u32;
+
+        let num_indices = vertex::INDICES.len() as u32;
 
         // The instance is a handle to our GPU
         // BackendBit::PRIMARY => Vulkan + Metal + DX12 + Browser WebGPU
@@ -85,6 +87,14 @@ impl<'a> State<'a> {
             }
         );
 
+        let index_buffer = device.create_buffer_init(
+            &wgpu::util::BufferInitDescriptor {
+                label: Some("Index Buffer"),
+                contents: bytemuck::cast_slice(vertex::INDICES),
+                usage: wgpu::BufferUsages::INDEX,
+            }
+        );
+
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
             source: wgpu::ShaderSource::Wgsl(include_str!("shaders/shader.wgsl").into())
@@ -93,15 +103,16 @@ impl<'a> State<'a> {
         let render_pipeline = create_render_pipeline(&device, &shader, &config);
 
         Self {
-            surface,
             device,
-            queue,
-            size,
-            config,
-            render_pipeline,
-            vertex_buffer,
             window,
-            num_vertices,
+            size,
+            render_pipeline,
+            queue,
+            surface,
+            config,
+            vertex_buffer,
+            index_buffer, 
+            num_indices,
         }
     }
 
@@ -159,7 +170,8 @@ impl<'a> State<'a> {
 
             render_pass.set_pipeline(&self.render_pipeline);
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
-            render_pass.draw(0..self.num_vertices, 0..1);
+            render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
+            render_pass.draw_indexed(0..self.num_indices, 0, 0..1);            
         }
 
         self.queue.submit(iter::once(encoder.finish()));
