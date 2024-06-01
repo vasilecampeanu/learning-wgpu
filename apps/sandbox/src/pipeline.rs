@@ -1,14 +1,8 @@
-use wgpu::{Device, ShaderModule, SurfaceConfiguration, RenderPipeline};
+use wgpu::{Device, ShaderModule, SurfaceConfiguration, RenderPipeline, PipelineLayout};
 
 use crate::vertex::VertexThingy;
 
-pub fn create_render_pipeline(device: &Device, shader: &ShaderModule, config: &SurfaceConfiguration) -> RenderPipeline {
-    let render_pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-        label: Some("Render Pipeline Layout"),
-        bind_group_layouts: &[],
-        push_constant_ranges: &[],
-    });
-
+pub fn create_render_pipeline(device: &Device, render_pipeline_layout: &PipelineLayout, shader: &ShaderModule, config: &SurfaceConfiguration) -> RenderPipeline {
     device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
         label: Some("WGPU Render Pipeline"),
         layout: Some(&render_pipeline_layout),

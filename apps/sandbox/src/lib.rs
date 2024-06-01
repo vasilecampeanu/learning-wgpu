@@ -2,6 +2,7 @@
 mod vertex;
 mod pipeline;
 mod state;
+mod texture;
 
 use crate::state::State;
 
