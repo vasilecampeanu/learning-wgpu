@@ -1,1 +1,1 @@
-# nbodyproblem
+# learning-wgpu
